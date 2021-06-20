@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+    <div>
+        <table class="table table-striped">
+
+            <tbody th:object="${boardDto}">
+            <tr>
+                <td>#</td>
+                <td th:text="${boardDto.id}"></td>
+            </tr>
+            <tr>
+                <td>제목</td>
+                <td th:text="${boardDto.title}"></td>
+            </tr>
+            <tr>
+                <td>작성자</td>
+                <td th:text="${boardDto.writer}"></td>
+            </tr>
+            <div>
+            <tr>
+
+                <td>글 내용</td>
+                <td th:text="${boardDto.content}"></td>
+            </tr>
+            </div>
+            <tr>
+                <td>수정일</td>
+                <td th:text="${#temporals.format(boardDto.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
+            </tr>
+
+
+           >
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+</html>
