@@ -6,6 +6,7 @@ import crud.board.domain.Board;
 import crud.board.dto.BoardDto;
 import crud.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.dom4j.rule.Mode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,7 @@ public class BoardController {
             return "/board/createdBoardForm";
         }
 
-        Board board = new Board(boardForm.getTitle(), boardForm.getWriter(), boardForm.getContent());
+        Board board = new Board(boardForm.getTitle(), boardForm.getWriter(), boardForm.getContent(),boardForm.getPassword());
         Long boardId = boardService.CreateBoard(board);
 
 
@@ -75,6 +76,58 @@ public class BoardController {
         model.addAttribute("boardDto", boardDto);
 
         return "board/boardList";
+
+    }
+
+    @GetMapping("board/edit/{id}")
+    public String updateBoardForm(@PathVariable("id")Long id,Model model) {
+
+        Board findOne = boardService.findOne(id);
+        BoardForm boardForm = new BoardForm();
+        boardForm.setTitle(findOne.getTitle());
+        boardForm.setWriter(findOne.getWriter());
+        boardForm.setContent(findOne.getContent());
+        boardForm.setId(findOne.getId());
+
+
+        model.addAttribute("boardForm", boardForm);
+
+
+        return "board/boardEditForm";
+
+    }
+
+    @PostMapping("board/edit/{id}")
+    public String updateBoard(@PathVariable("id")Long id, @Valid BoardForm boardForm) {
+
+        System.out.println("boardForm = " + boardForm.getId());
+
+        Board findOne = boardService.findOne(boardForm.getId());
+
+        if(!boardForm.getPassword().equals(findOne.getPassword())){
+            return "redirect:/board/edit/" + boardForm.getId();
+        }
+
+
+        boardService.update(findOne.getId(),boardForm.getTitle(),boardForm.getContent());
+
+        return "redirect:/board";
+    }
+
+    @PostMapping("board/delete/{id}")
+    public String deleteBoard(@PathVariable("id") Long id, @RequestParam("password") String password) {
+
+        Board findOne = boardService.findOne(id);
+
+        //패스워드가 다를시 게시글로 돌아옴
+        if (!findOne.getPassword().equals(password)) {
+            return "redirect:/board/" + id;
+        }
+
+        //같으면 삭제
+        boardService.delete(findOne);
+
+        return "redirect:/board";
 
     }
 }

@@ -35,8 +35,8 @@ public class BoardRepository {
     }
 
     @Transactional
-    public void delete(Long id){
-        em.remove(findOne(id));
+    public void delete(Board board){
+        em.remove(board);
     }
 
 

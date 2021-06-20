@@ -26,6 +26,8 @@
                 </td>
                 <td th:text="${board.writer}"></td>
                 <td th:text="${#temporals.format(board.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td><a href="#" th:href="@{/board/edit/{id} (id=${board.id})}"/>수정</td>
+
             </tr>
             </tbody>
         </table>

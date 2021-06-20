@@ -8,14 +8,16 @@
 
 </style>
 <body>
+<div>
+    <th>게시글 수정</th>
+</div>
+
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <form role="form" action="/board/new" th:object="${boardForm}"
-          method="post">
+    <form  th:object="${boardForm}" method="post">
         <div class="form-group">
             <label th:for="title">제목</label>
-            <input type="text" th:field="*{title}" class="form-control"
-                   placeholder="제목을 입력하세요"
+            <input type="text"  th:field="*{title}" class="form-control"
                    th:class="${#fields.hasErrors('title')}? 'form-control
 fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('title')}"
@@ -23,10 +25,8 @@ fieldError' : 'form-control'">
         </div>
         <div class="form-group">
             <label th:for="writer">작성자</label>
-            <input type="text" th:field="*{writer}" class="form-control"
-                   placeholder="작성자 이름을 입력하세요"
-                   th:class="${#fields.hasErrors('writer')}? 'form-control
-fieldError' : 'form-control'">
+            <input type="hidden" th:field="*{writer}" class="form-control">
+            <td th:text="*{writer}"></td>
             <p th:if="${#fields.hasErrors('writer')}"
                th:errors="*{writer}">Incorrect date</p>
         </div>
@@ -41,12 +41,14 @@ fieldError' : 'form-control'">
         </div>
         <div class="form-group">
             <label th:for="content">내용</label>
-            <input type="text" th:field="*{content}" class="form-control"
-                   placeholder="내용을 입력하세요"
+            <input type="text"  th:field="*{content}" class="form-control"
                    th:class="${#fields.hasErrors('content')}? 'form-control
 fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('content')}"
-               th:errors="*{content}">Incorrect date</p>>
+               th:errors="*{content}">Incorrect date</p>
+        </div>
+        <div class="form-group">
+            <input type="hidden" th:field="*{id}" />
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>

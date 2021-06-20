@@ -15,6 +15,10 @@ public class BoardForm {
     private String writer;
     @NotEmpty(message = "내용은 필수 입니다")
     private String content;
+    @NotEmpty(message = "패스워드는 필수 입니다")
+    private String password;
+
+    private Long id;
 
 
 

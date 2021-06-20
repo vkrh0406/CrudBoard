@@ -20,6 +20,8 @@ public class Board {
 
     private String content;
 
+    private String password;
+
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
 
@@ -32,10 +34,11 @@ public class Board {
 
     }
 
-    public Board(String title, String writer, String content) {
+    public Board(String title, String writer, String content,String password) {
         this.title = title;
         this.writer = writer;
         this.content = content;
+        this.password=password;
         this.createdTime = LocalDateTime.now();
         this.updatedTime = this.createdTime;
     }

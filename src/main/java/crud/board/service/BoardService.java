@@ -44,5 +44,9 @@ public class BoardService {
 
     }
 
+    public void delete(Board board) {
+        boardRepository.delete(board);
+    }
+
 
 }

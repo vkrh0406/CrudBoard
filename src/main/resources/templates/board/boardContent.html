@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/header :: header" />
+<head th:replace="fragments/header :: header"/>
 <body>
 <div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
     <div>
         <table class="table table-striped">
 
@@ -21,23 +21,41 @@
                 <td th:text="${boardDto.writer}"></td>
             </tr>
             <div>
-            <tr>
+                <tr>
 
-                <td>글 내용</td>
-                <td th:text="${boardDto.content}"></td>
-            </tr>
+                    <td>글 내용</td>
+                    <td th:text="${boardDto.content}"></td>
+                </tr>
             </div>
             <tr>
                 <td>수정일</td>
                 <td th:text="${#temporals.format(boardDto.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
             </tr>
 
+            <tr>
+                <td><a href="#" th:href="@{/board/edit/{id} (id=${boardDto.id})}"/>수정</td>
+            </tr>
 
-           >
+
+
+
             </tbody>
         </table>
+        <div>
+            <tr>
+
+                <td>패스워드</td>
+                <form role="form" th:object="${boardDto}" th:action="@{/board/delete/{id} (id=${boardDto.id})}"
+                      method="post">
+
+                    <input type="text" name="password">
+                    <!--                    <input type="hidden" th:field="*{id}">-->
+                    <button type="submit" class="btn btn-primary">삭제</button>
+                </form>
+            </tr>
+        </div>
     </div>
-    <div th:replace="fragments/footer :: footer" />
+    <div th:replace="fragments/footer :: footer"/>
 </div> <!-- /container -->
 </body>
 </html>
