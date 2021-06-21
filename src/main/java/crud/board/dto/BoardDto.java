@@ -1,5 +1,6 @@
 package crud.board.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import crud.board.domain.Member;
 import lombok.Data;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class BoardDto {
     private String content;
     private LocalDateTime updatedTime;
 
+    @QueryProjection
     public BoardDto(Long id, String title, String writer, String content,LocalDateTime updatedTime) {
         this.id = id;
         this.title = title;

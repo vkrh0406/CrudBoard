@@ -1,12 +1,15 @@
 package crud.board.service;
 
 
+import crud.board.controller.BoardSearch;
 import crud.board.domain.Board;
 import crud.board.dto.BoardDto;
 import crud.board.repository.BoardRepository;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +49,12 @@ public class BoardService {
 
     public void delete(Board board) {
         boardRepository.delete(board);
+    }
+
+    public Page<BoardDto> search(BoardSearch boardSearch, Pageable pageable){
+
+        return boardRepository.searchBoard(boardSearch, pageable);
+
     }
 
 

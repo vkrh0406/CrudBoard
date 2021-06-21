@@ -8,6 +8,8 @@ import crud.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.dom4j.rule.Mode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -66,14 +68,37 @@ public class BoardController {
     }
 
     @GetMapping("board")
-    public String boardList(Model model) {
+    public String boardList(Model model,BoardSearch boardSearch,Pageable pageable) {
 
-        List<Board> boardList = boardService.findBoardList();
-        List<BoardDto> boardDto = boardList.stream()
-                .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(), o.getUpdatedTime()))
-                .collect(Collectors.toList());
+        if (boardSearch.getSearchType()==null) {
+            List<Board> boardList = boardService.findBoardList();
+            List<BoardDto> boardDto = boardList.stream()
+                    .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(), o.getUpdatedTime()))
+                    .collect(Collectors.toList());
 
-        model.addAttribute("boardDto", boardDto);
+            model.addAttribute("boardDto", boardDto);
+            model.addAttribute("boardSearch", boardSearch);
+
+            return "board/boardList";
+        }
+        else if(boardSearch.getSearchType().equals("title")){
+            boardSearch.setTitle(boardSearch.getKeyword());
+        }
+        else if(boardSearch.getSearchType().equals("writer")){
+            boardSearch.setWriter(boardSearch.getKeyword());
+        }
+        else if(boardSearch.getSearchType().equals("content")){
+            boardSearch.setContent(boardSearch.getKeyword());
+        }
+        else if(boardSearch.getSearchType().equals("titleAndContent")){
+            boardSearch.setTitle(boardSearch.getKeyword());
+            boardSearch.setContent(boardSearch.getKeyword());
+        }
+
+        Page<BoardDto> searchResults = boardService.search(boardSearch, pageable);
+
+        model.addAttribute("boardSearch", boardSearch);
+        model.addAttribute("boardDto", searchResults);
 
         return "board/boardList";
 
