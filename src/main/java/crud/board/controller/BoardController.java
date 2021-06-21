@@ -70,7 +70,7 @@ public class BoardController {
     @GetMapping("board")
     public String boardList(Model model,BoardSearch boardSearch,Pageable pageable) {
 
-        if (boardSearch.getSearchType()==null) {
+        if (boardSearch.getSearchType()==null || boardSearch.getSearchType().equals("")) {
             List<Board> boardList = boardService.findBoardList();
             List<BoardDto> boardDto = boardList.stream()
                     .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(), o.getUpdatedTime()))

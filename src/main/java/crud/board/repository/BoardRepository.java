@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.swing.text.StyledEditorKit;
 import java.util.List;
 
 import static crud.board.domain.QBoard.board;
@@ -60,7 +61,7 @@ public class BoardRepository {
         List<BoardDto> content = queryFactory
                 .select(new QBoardDto(board.id, board.title, board.writer, board.content, board.updatedTime))
                 .from(board)
-                .where(titleContain(boardSearch.getTitle()).or(contentContain(boardSearch.getContent())),
+                .where(titleAndContentContain(boardSearch.getTitle(), boardSearch.getContent()),
                         writerContain(boardSearch.getWriter()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -69,8 +70,8 @@ public class BoardRepository {
         JPAQuery<Board> countQuery = queryFactory
                 .select(board)
                 .from(board)
-                .where(titleContain(boardSearch.getTitle()).or(contentContain(boardSearch.getContent())),
-                        writerContain(boardSearch.getWriter()));
+                .where(titleAndContentContain(boardSearch.getTitle(), boardSearch.getContent()),
+                        writerContain(boardSearch.getWriter()) );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
 
@@ -87,6 +88,29 @@ public class BoardRepository {
 
     private BooleanExpression contentContain(String content) {
         return (hasText(content)) ? board.content.contains(content) : null;
+    }
+
+    /**
+     * 제목과 내용 둘중 하나가 널일 가능성이 있지만 Or에는 Null이 들어가면 안된다.. 그래서 메소드로 만듦
+     * @param title
+     * @param content
+     * @return
+     */
+    private BooleanExpression titleAndContentContain(String title,String content) {
+
+        BooleanExpression contains;
+        if (hasText(title) && hasText(content)) {
+            contains = board.title.contains(title).or(board.content.contains(content));
+        }
+        else if(hasText(title)){
+            contains = board.title.contains(title);
+        }
+        else{
+            contains = board.title.contains(content);
+        }
+
+        return contains;
+
     }
 
 
