@@ -27,6 +27,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    //게시글 폼 생성
     @GetMapping("board/new")
     public String createBoardForm(Model model) {
         model.addAttribute("boardForm", new BoardForm());
@@ -34,6 +35,7 @@ public class BoardController {
         return "board/createdBoardForm";
     }
 
+    //게시글 생성
     @PostMapping("board/new")
     public String createBoard(@Valid BoardForm boardForm, BindingResult result,Model model) {
         if (result.hasErrors()) {
@@ -44,12 +46,12 @@ public class BoardController {
         Long boardId = boardService.CreateBoard(board);
 
 
-
-
+        
         return "redirect:/board/"+boardId;
 
     }
 
+    //게시글 조회
     @GetMapping("board/{boardId}")
     public String lookBoard(@PathVariable("boardId") Long id, Model model) {
 
@@ -67,34 +69,24 @@ public class BoardController {
         return "board/boardContent";
     }
 
+    //게시글 리스트
     @GetMapping("board")
     public String boardList(Model model,BoardSearch boardSearch,Pageable pageable) {
 
+        // 검색조건타입이 없으면 전부 조회
         if (boardSearch.getSearchType()==null || boardSearch.getSearchType().equals("")) {
-            List<Board> boardList = boardService.findBoardList();
-            List<BoardDto> boardDto = boardList.stream()
-                    .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(), o.getUpdatedTime()))
-                    .collect(Collectors.toList());
+            Page<BoardDto> boardList = boardService.findBoardList(pageable);
 
-            model.addAttribute("boardDto", boardDto);
+            model.addAttribute("boardDto", boardList);
             model.addAttribute("boardSearch", boardSearch);
 
             return "board/boardList";
-        }
-        else if(boardSearch.getSearchType().equals("title")){
-            boardSearch.setTitle(boardSearch.getKeyword());
-        }
-        else if(boardSearch.getSearchType().equals("writer")){
-            boardSearch.setWriter(boardSearch.getKeyword());
-        }
-        else if(boardSearch.getSearchType().equals("content")){
-            boardSearch.setContent(boardSearch.getKeyword());
-        }
-        else if(boardSearch.getSearchType().equals("titleAndContent")){
-            boardSearch.setTitle(boardSearch.getKeyword());
-            boardSearch.setContent(boardSearch.getKeyword());
+        }// 검색조건타입에 따라 객체에 키워드를 집어넣음
+        else {
+            boardSearch.checkSearchType();
         }
 
+        //검색
         Page<BoardDto> searchResults = boardService.search(boardSearch, pageable);
 
         model.addAttribute("boardSearch", boardSearch);
@@ -104,6 +96,7 @@ public class BoardController {
 
     }
 
+    //게시글 수정 폼
     @GetMapping("board/edit/{id}")
     public String updateBoardForm(@PathVariable("id")Long id,Model model) {
 
@@ -122,6 +115,7 @@ public class BoardController {
 
     }
 
+    //게시글 수정
     @PostMapping("board/edit/{id}")
     public String updateBoard(@PathVariable("id")Long id, @Valid BoardForm boardForm) {
 
@@ -139,6 +133,7 @@ public class BoardController {
         return "redirect:/board";
     }
 
+    //게시글 삭제
     @PostMapping("board/delete/{id}")
     public String deleteBoard(@PathVariable("id") Long id, @RequestParam("password") String password) {
 

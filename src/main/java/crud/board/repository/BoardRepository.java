@@ -1,6 +1,8 @@
 package crud.board.repository;
 
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -9,6 +11,7 @@ import crud.board.domain.Board;
 import crud.board.dto.BoardDto;
 import crud.board.dto.QBoardDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -45,9 +48,22 @@ public class BoardRepository {
         return em.find(Board.class, id);
     }
 
-    public List<Board> findAll() {
-        return em.createQuery("select b from Board b", Board.class)
-                .getResultList();
+    public Page<BoardDto> findAll(Pageable pageable) {
+        QueryResults<BoardDto> boardDtoQueryResults = queryFactory
+                .select(new QBoardDto(board.id, board.title, board.writer, board.content, board.updatedTime))
+                .from(board)
+                .orderBy(board.id.desc())
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .fetchResults();
+
+        List<BoardDto> content = boardDtoQueryResults.getResults();
+
+        long total = boardDtoQueryResults.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+
+
     }
 
     @Transactional
@@ -61,17 +77,18 @@ public class BoardRepository {
         List<BoardDto> content = queryFactory
                 .select(new QBoardDto(board.id, board.title, board.writer, board.content, board.updatedTime))
                 .from(board)
-                .where(titleAndContentContain(boardSearch.getTitle(), boardSearch.getContent()),
-                        writerContain(boardSearch.getWriter()))
+                .where(searchCondition(boardSearch.getTitle(), boardSearch.getContent(), boardSearch.getWriter()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(board.id.desc())
                 .fetch();
 
         JPAQuery<Board> countQuery = queryFactory
                 .select(board)
                 .from(board)
-                .where(titleAndContentContain(boardSearch.getTitle(), boardSearch.getContent()),
-                        writerContain(boardSearch.getWriter()) );
+                .where(searchCondition(boardSearch.getTitle(), boardSearch.getContent(), boardSearch.getWriter()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
 
@@ -92,24 +109,28 @@ public class BoardRepository {
 
     /**
      * 제목과 내용 둘중 하나가 널일 가능성이 있지만 Or에는 Null이 들어가면 안된다.. 그래서 메소드로 만듦
+     *
      * @param title
      * @param content
      * @return
      */
-    private BooleanExpression titleAndContentContain(String title,String content) {
+    private BooleanBuilder searchCondition(String title, String content, String writer) {
 
-        BooleanExpression contains;
-        if (hasText(title) && hasText(content)) {
-            contains = board.title.contains(title).or(board.content.contains(content));
+
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (hasText(title)) {
+            booleanBuilder.or(board.title.contains(title));
         }
-        else if(hasText(title)){
-            contains = board.title.contains(title);
+        if (hasText(content)) {
+            booleanBuilder.or(board.content.contains(content));
         }
-        else{
-            contains = board.title.contains(content);
+        if (hasText(writer)) {
+            booleanBuilder.or(board.writer.contains(writer));
         }
 
-        return contains;
+
+        return booleanBuilder;
 
     }
 
