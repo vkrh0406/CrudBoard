@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -71,7 +72,9 @@ public class BoardController {
 
     //게시글 리스트
     @GetMapping("board")
-    public String boardList(Model model,BoardSearch boardSearch,Pageable pageable) {
+    public String boardList(Model model, BoardSearch boardSearch,@PageableDefault(size = 10) Pageable pageable) {
+
+
 
         // 검색조건타입이 없으면 전부 조회
         if (boardSearch.getSearchType()==null || boardSearch.getSearchType().equals("")) {
@@ -89,10 +92,42 @@ public class BoardController {
         //검색
         Page<BoardDto> searchResults = boardService.search(boardSearch, pageable);
 
+
+
         model.addAttribute("boardSearch", boardSearch);
         model.addAttribute("boardDto", searchResults);
 
         return "board/boardList";
+
+    }//게시글 리스트
+    @GetMapping("board/api")
+    @ResponseBody
+    public Page<BoardDto> boardListApi(Model model, BoardSearch boardSearch,@PageableDefault(size = 10) Pageable pageable) {
+
+
+
+        // 검색조건타입이 없으면 전부 조회
+        if (boardSearch.getSearchType()==null || boardSearch.getSearchType().equals("")) {
+            Page<BoardDto> boardList = boardService.findBoardList(pageable);
+
+            model.addAttribute("boardDto", boardList);
+            model.addAttribute("boardSearch", boardSearch);
+
+            return boardList;
+        }// 검색조건타입에 따라 객체에 키워드를 집어넣음
+        else {
+            boardSearch.checkSearchType();
+        }
+
+        //검색
+        Page<BoardDto> searchResults = boardService.search(boardSearch, pageable);
+
+
+
+        model.addAttribute("boardSearch", boardSearch);
+        model.addAttribute("boardDto", searchResults);
+
+        return searchResults;
 
     }
 

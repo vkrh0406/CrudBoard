@@ -108,7 +108,7 @@ public class BoardRepository {
     }
 
     /**
-     * 제목과 내용 둘중 하나가 널일 가능성이 있지만 Or에는 Null이 들어가면 안된다.. 그래서 메소드로 만듦
+     * booleanBuilder 를 활용해  Or 조건을 집어넣었습니다.
      *
      * @param title
      * @param content

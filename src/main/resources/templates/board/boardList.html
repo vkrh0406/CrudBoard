@@ -62,12 +62,34 @@
         <div>
 
             <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                <ul class="pagination"
+                th:with="start=${T(Math).floor(boardDto.number/10)*10},
+                last=(${start + 9 < boardDto.totalPages ? start + 9 : boardDto.totalPages})">
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/board(page=0)}" aria-label="First">
+                            <span aria-hidden="true">First</span>
+                        </a>
+                    </li>
+                    <li class="page-item" th:class="${boardDto.first} ? 'disabled'">
+                        <a class="page-link" th:href="${boardDto.first} ? '#' : @{/board(page=${boardDto.number-1})}" aria-label="Previous">
+                            <span aria-hidden="true">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item" th:each="page: ${#numbers.sequence(start,last-1)}" th:class="${page== boardDto.number} ? 'page-item active'">
+                        <a class="page-link" th:href="@{board(page=${page})}" th:text="${page+1}">
+                        </a>
+                    </li>
+                    <li class="page-item" th:class="${boardDto.last} ? 'disabled'">
+                        <a class="page-link" th:href="${boardDto.last} ? '#' : @{/board(page=${boardDto.number+1})}" aria-label="Next">
+                            <span aria-hidden="true">Next</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/board(page=${boardDto.totalPages-1})}" aria-label="Last">
+                            <span aria-hidden="true">Last</span>
+                        </a>
+                    </li>
+
                 </ul>
             </nav>
         </div>
