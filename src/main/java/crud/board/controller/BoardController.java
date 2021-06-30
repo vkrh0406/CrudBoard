@@ -6,9 +6,11 @@ import crud.board.domain.Board;
 import crud.board.dto.BoardDto;
 import crud.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dom4j.rule.Mode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
@@ -17,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 
     private final BoardService boardService;
@@ -76,19 +80,6 @@ public class BoardController {
 
 
 
-        // 검색조건타입이 없으면 전부 조회
-        if (boardSearch.getSearchType()==null || boardSearch.getSearchType().equals("")) {
-            Page<BoardDto> boardList = boardService.findBoardList(pageable);
-
-            model.addAttribute("boardDto", boardList);
-            model.addAttribute("boardSearch", boardSearch);
-
-            return "board/boardList";
-        }// 검색조건타입에 따라 객체에 키워드를 집어넣음
-        else {
-            boardSearch.checkSearchType();
-        }
-
         //검색
         Page<BoardDto> searchResults = boardService.search(boardSearch, pageable);
 
@@ -106,26 +97,11 @@ public class BoardController {
 
 
 
-        // 검색조건타입이 없으면 전부 조회
-        if (boardSearch.getSearchType()==null || boardSearch.getSearchType().equals("")) {
-            Page<BoardDto> boardList = boardService.findBoardList(pageable);
-
-            model.addAttribute("boardDto", boardList);
-            model.addAttribute("boardSearch", boardSearch);
-
-            return boardList;
-        }// 검색조건타입에 따라 객체에 키워드를 집어넣음
-        else {
-            boardSearch.checkSearchType();
-        }
-
         //검색
         Page<BoardDto> searchResults = boardService.search(boardSearch, pageable);
 
 
 
-        model.addAttribute("boardSearch", boardSearch);
-        model.addAttribute("boardDto", searchResults);
 
         return searchResults;
 
@@ -170,17 +146,19 @@ public class BoardController {
 
     //게시글 삭제
     @PostMapping("board/delete/{id}")
-    public String deleteBoard(@PathVariable("id") Long id, @RequestParam("password") String password) {
+    public String deleteBoard(@PathVariable("id") Long id, @RequestParam("password") String password, RedirectAttributes redirectAttributes) throws IllegalAccessException {
 
-        Board findOne = boardService.findOne(id);
 
-        //패스워드가 다를시 게시글로 돌아옴
-        if (!findOne.getPassword().equals(password)) {
-            return "redirect:/board/" + id;
+
+        try {
+            boardService.delete(id, password);
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("id", id);
+            log.debug(e.getMessage());
+
+            return "redirect:/board/{id}";
         }
 
-        //같으면 삭제
-        boardService.delete(findOne);
 
         return "redirect:/board";
 

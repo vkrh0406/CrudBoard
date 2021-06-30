@@ -49,20 +49,37 @@ public class BoardService {
 
     }
 
-    public void delete(Board board) {
-        boardRepository.delete(board);
+    public void delete(Long boardId,String password) throws IllegalAccessException {
+
+        Board findOne = boardRepository.findOne(boardId);
+        if (!findOne.getPassword().equals(password)) {
+
+            throw new IllegalAccessException("패스워드가 다릅니다");
+        }
+        else {
+            boardRepository.delete(findOne);
+        }
+
+
     }
 
-    public Page<BoardDto> search(BoardSearch boardSearch, Pageable pageable) {
+    public Page<BoardDto> search(BoardSearch boardSearch, Pageable pageable) throws IllegalArgumentException {
 
-//        //게시판 정렬
-//        int page;
-//        if (pageable.getPageNumber() <= 0) {
-//            page = 0;
-//        } else {
-//            page = pageable.getPageNumber() - 1;
-//        }
-//        Pageable requestPageable = PageRequest.of(page, pageable.getPageSize());
+        if (pageable.getPageSize() >= 100) {
+            throw new IllegalArgumentException("PageSize so Big");
+        }
+
+        // 검색조건타입이 없으면 전부 조회
+        if (boardSearch.getSearchType()==null || boardSearch.getSearchType().equals("")) {
+            Page<BoardDto> boardList = boardRepository.findAll(pageable);
+
+            return boardList;
+
+        }// 검색조건타입에 따라 객체에 키워드를 집어넣음
+        else {
+            boardSearch.checkSearchType();
+        }
+
 
 
         Page<BoardDto> boardDto = boardRepository.searchBoard(boardSearch, pageable);

@@ -13,6 +13,7 @@ import crud.board.dto.QBoardDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ public class BoardRepository {
 
         return board.getId();
     }
+
 
     public Board findOne(Long id) {
         return em.find(Board.class, id);

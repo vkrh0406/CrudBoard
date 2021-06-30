@@ -75,7 +75,7 @@
                             <span aria-hidden="true">Previous</span>
                         </a>
                     </li>
-                    <li class="page-item" th:each="page: ${#numbers.sequence(start,last-1)}" th:class="${page== boardDto.number} ? 'page-item active'">
+                    <li class="page-item" th:each="page: ${last>=boardDto.totalPages}  ? ${#numbers.sequence(start,last-1)} : ${#numbers.sequence(start,last)}" th:class="${page== boardDto.number} ? 'page-item active'">
                         <a class="page-link" th:href="@{board(page=${page})}" th:text="${page+1}">
                         </a>
                     </li>
