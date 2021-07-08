@@ -16,7 +16,7 @@
                 </select>
             </div>
             <div class="form-group mb-2">
-                        <input type="text" th:field="*{keyword}" class="form-control" placeholder="키워드"/>
+                <input type="text" th:field="*{keyword}" class="form-control" placeholder="키워드"/>
             </div>
             <button type="submit" class="btn btn-primary mb-2">검색</button>
 
@@ -34,21 +34,21 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="board : ${boardDto}">
-                <td th:text="${board.id}">
-                </td>
-                <td>
-                    <a href="#" th:href="@{/board/{id} (id=${board.id})}"
-                       th:text="${board.title}"></a>
+            <tr th:each="board : ${boardDto}" th:onclick="|location.href='@{/board/{id} (id=${board.id})}'|" onmouseover='this.style.backgroundColor="#b8dcee"'
+                onmouseout='this.style.backgroundColor=""' style="cursor:hand"
+            >
 
-                </td>
-                <td th:text="${board.writer}"></td>
-                <td th:text="${#temporals.format(board.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
-                <td><a href="#" th:href="@{/board/edit/{id} (id=${board.id})}"/>수정</td>
+                    <td th:text="${board.id}"></td>
+                    <td th:text="${board.title}"></td>
+                    <td th:text="${board.writer}"></td>
+                    <td th:text="${#temporals.format(board.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
+
+
+
+
+            <td><a href="#" th:href="@{/board/edit/{id} (id=${board.id})}"/>수정</td>
 
             </tr>
-
-
 
 
             </tbody>
@@ -57,13 +57,11 @@
         </table>
 
 
-
-
         <div>
 
             <nav aria-label="Page navigation example">
                 <ul class="pagination"
-                th:with="start=${T(Math).floor(boardDto.number/10)*10},
+                    th:with="start=${T(Math).floor(boardDto.number/10)*10},
                 last=(${start + 9 < boardDto.totalPages ? start + 9 : boardDto.totalPages})">
                     <li class="page-item">
                         <a class="page-link" th:href="@{/board(page=0)}" aria-label="First">
@@ -71,16 +69,20 @@
                         </a>
                     </li>
                     <li class="page-item" th:class="${boardDto.first} ? 'disabled'">
-                        <a class="page-link" th:href="${boardDto.first} ? '#' : @{/board(page=${boardDto.number-1})}" aria-label="Previous">
+                        <a class="page-link" th:href="${boardDto.first} ? '#' : @{/board(page=${boardDto.number-1})}"
+                           aria-label="Previous">
                             <span aria-hidden="true">Previous</span>
                         </a>
                     </li>
-                    <li class="page-item" th:each="page: ${last>=boardDto.totalPages}  ? ${#numbers.sequence(start,last-1)} : ${#numbers.sequence(start,last)}" th:class="${page== boardDto.number} ? 'page-item active'">
+                    <li class="page-item"
+                        th:each="page: ${last>=boardDto.totalPages}  ? ${#numbers.sequence(start,last-1)} : ${#numbers.sequence(start,last)}"
+                        th:class="${page== boardDto.number} ? 'page-item active'">
                         <a class="page-link" th:href="@{board(page=${page})}" th:text="${page+1}">
                         </a>
                     </li>
                     <li class="page-item" th:class="${boardDto.last} ? 'disabled'">
-                        <a class="page-link" th:href="${boardDto.last} ? '#' : @{/board(page=${boardDto.number+1})}" aria-label="Next">
+                        <a class="page-link" th:href="${boardDto.last} ? '#' : @{/board(page=${boardDto.number+1})}"
+                           aria-label="Next">
                             <span aria-hidden="true">Next</span>
                         </a>
                     </li>
