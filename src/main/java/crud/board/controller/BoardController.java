@@ -1,9 +1,12 @@
 package crud.board.controller;
 
 
+import crud.board.SessionConst;
 import crud.board.controller.form.BoardForm;
 import crud.board.domain.Board;
+import crud.board.domain.Member;
 import crud.board.dto.BoardDto;
+import crud.board.dto.MemberLoginDto;
 import crud.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +61,16 @@ public class BoardController {
 
     //게시글 조회
     @GetMapping("board/{boardId}")
-    public String lookBoard(@PathVariable("boardId") Long id, Model model) {
+    public String lookBoard(@PathVariable("boardId") Long id, Model model, @SessionAttribute(name = SessionConst.SESSION_LOGIN_MEMBER,required = false)Member member) {
+
+        log.info("member = {} ",member);
+
+        if (member != null) {
+            MemberLoginDto memberLoginDto = new MemberLoginDto();
+            memberLoginDto.setUsername(member.getUsername());
+            model.addAttribute("username", memberLoginDto.getUsername());
+            log.info("username {}", memberLoginDto.getUsername());
+        }
 
 
         System.out.println("id = " + id);
@@ -71,13 +83,23 @@ public class BoardController {
         model.addAttribute("boardDto", boardDto);
 
 
+
         return "board/boardContent";
     }
 
     //게시글 리스트
     @GetMapping("board")
-    public String boardList(Model model, BoardSearch boardSearch,@PageableDefault(size = 10) Pageable pageable) {
+    public String boardList(Model model, BoardSearch boardSearch,@PageableDefault(size = 10) Pageable pageable,
+                            @SessionAttribute(name = SessionConst.SESSION_LOGIN_MEMBER,required = false)Member member) {
 
+        log.info("member = {} ",member);
+
+        if (member != null) {
+            MemberLoginDto memberLoginDto = new MemberLoginDto();
+            memberLoginDto.setUsername(member.getUsername());
+            model.addAttribute("username", memberLoginDto.getUsername());
+            log.info("username {}", memberLoginDto.getUsername());
+        }
 
 
         //검색

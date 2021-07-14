@@ -1,13 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<div class="header" th:fragment="bodyHeader">
+<div class="header" th:fragment="bodyHeader(username)">
     <ul class="nav nav-pills pull-right">
         <li><a href="/">Home</a></li>
     </ul>
     <a href="/"><h3 class="text-muted">HELLO BOARD</h3></a>
-    <td>
-        <a href="/board/new">글쓰기</a>
-    </td>
+    <div class="row">
+        <div class="col">
+            <button class="w-75 btn btn-primary btn-lg" type="button"
+                    th:onclick="|location.href='@{/board/new}'|">
+                글쓰기</button>
+        </div>
+        <div class="col" th:if="${#strings.isEmpty(username)}">
+            <button class="w-75 btn btn-primary btn-lg" type="button"
+                    th:onclick="|location.href='@{/member/new}'|">
+                회원가입</button>
+        </div>
+        <div class="col">
+            <button class="w-75 btn btn-primary btn-lg" type="button" th:if="${#strings.isEmpty(username)}"
+                    th:onclick="|location.href='@{/member/login}'|">
+                로그인</button>
+            <button class="w-75 btn btn-primary btn-lg" type="button" th:if="${not #strings.isEmpty(username)}"
+                    th:onclick="|location.href='@{/member/logout}'|">
+                로그아웃</button>
+        </div>
+    </div>
+<!--    <td>-->
+<!--        <a href="/board/new">글쓰기</a>-->
+<!--    </td>-->
+<!--    <td>-->
+<!--        <a href="/member/new">회원가입</a>-->
+<!--    </td>-->
+<!--    <td>-->
+<!--        <a href="/member/login">로그인</a>-->
+<!--    </td>-->
+
 
 </div>
 

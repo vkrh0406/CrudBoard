@@ -3,7 +3,7 @@
 <head th:replace="fragments/header :: header"/>
 <body>
 <div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div th:replace="fragments/bodyHeader :: bodyHeader(${username!=null}? ${username} : '')"/>
     <div>
         <table class="table table-striped">
 

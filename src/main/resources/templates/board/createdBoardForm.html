@@ -9,7 +9,7 @@
 </style>
 <body>
 <div class="container">
-    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <div th:replace="fragments/bodyHeader :: bodyHeader(${username!=null}? ${username} : '')"/>
     <form role="form" action="/board/new" th:object="${boardForm}"
                 method="post">
             <div class="form-group">
