@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import crud.board.controller.BoardSearch;
 import crud.board.domain.Board;
+import crud.board.domain.UploadFile;
 import crud.board.dto.BoardDto;
 import crud.board.dto.QBoardDto;
 import org.springframework.data.domain.Page;

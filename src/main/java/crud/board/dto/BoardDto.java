@@ -2,6 +2,7 @@ package crud.board.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import crud.board.domain.Member;
+import crud.board.domain.UploadFile;
 import lombok.Data;
 import lombok.Getter;
 
@@ -9,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class BoardDto {
@@ -18,6 +20,11 @@ public class BoardDto {
     private String writer;
     private String content;
     private LocalDateTime updatedTime;
+    private List<UploadFile> uploadFiles;
+
+    public void setUploadFiles(List<UploadFile> uploadFiles) {
+        this.uploadFiles = uploadFiles;
+    }
 
     @QueryProjection
     public BoardDto(Long id, String title, String writer, String content,LocalDateTime updatedTime) {

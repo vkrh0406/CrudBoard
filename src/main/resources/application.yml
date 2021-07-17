@@ -8,14 +8,19 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         # show_sql: true
         format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
 #        use_sql_comments: true
 
 
 logging.level:
   org.hibernate.SQL: debug
+
 #  org.hibernate.type: trace

@@ -10,7 +10,7 @@
 <body>
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader(${username!=null}? ${username} : '')"/>
-    <form role="form" action="/board/new" th:object="${boardForm}"
+    <form role="form" action="/board/new" th:object="${boardForm}" enctype="multipart/form-data"
                 method="post">
             <div class="form-group">
                 <label th:for="title">제목</label>
@@ -23,7 +23,7 @@
         <div class="form-group">
             <label th:for="writer">작성자</label>
             <input type="text" th:field="*{writer}" class="form-control"
-                   placeholder="작성자 이름을 입력하세요"
+                   placeholder="작성자 이름을 입력하세요" th:disabled="${username!=null} ? disabled"
                    th:class="${#fields.hasErrors('writer')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('writer')}"
                th:errors="*{writer}">Incorrect date</p>
@@ -31,10 +31,10 @@
         <div class="form-group">
             <label th:for="password">패스워드</label>
             <input type="text" th:field="*{password}" class="form-control"
-                   placeholder="패스워드를 입력하세요"
+                   placeholder="패스워드를 입력하세요 "
                    th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('password')}"
-               th:errors="*{writer}">Incorrect date</p>
+               th:errors="*{password}">Incorrect date</p>
         </div>
         <div class="form-group">
             <label th:for="content">내용</label>
@@ -45,6 +45,17 @@
             <p th:if="${#fields.hasErrors('content')}"
                th:errors="*{content}">Incorrect date</p>
         </div>
+
+        <div class="form-group">
+            <label th:for="content">첨부파일</label>
+            <input type="file" multiple="multiple" style="margin: 0px; height: 50px; width: 100% ;" th:field="*{multipartFiles}" class="form-control"
+                      placeholder="내용을 입력하세요"
+                      th:class="${#fields.hasErrors('multipartFiles')}? 'form-control fieldError' : 'form-control'"/>
+            <p th:if="${#fields.hasErrors('multipartFiles')}"
+               th:errors="*{multipartFiles}">Incorrect date</p>
+        </div>
+
+
 
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

@@ -1,10 +1,15 @@
 package crud.board.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.tomcat.jni.Local;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +27,13 @@ public class Board {
 
     private String password;
 
+
+
+    @ElementCollection
+    private List<UploadFile> uploadFiles;
+
+
+
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
 
@@ -34,7 +46,11 @@ public class Board {
 
     }
 
-    public Board(String title, String writer, String content,String password) {
+    public void setUploadFiles(List<UploadFile> uploadFiles) {
+        this.uploadFiles = uploadFiles;
+    }
+
+    public Board(String title, String writer, String content, String password) {
         this.title = title;
         this.writer = writer;
         this.content = content;

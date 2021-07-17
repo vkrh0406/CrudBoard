@@ -1,10 +1,12 @@
 package crud.board.controller;
 
 
+import crud.board.FileStore;
 import crud.board.SessionConst;
 import crud.board.controller.form.BoardForm;
 import crud.board.domain.Board;
 import crud.board.domain.Member;
+import crud.board.domain.UploadFile;
 import crud.board.dto.BoardDto;
 import crud.board.dto.MemberLoginDto;
 import crud.board.service.BoardService;
@@ -12,19 +14,27 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.rule.Mode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriUtils;
 
 import javax.validation.Valid;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +44,7 @@ import java.util.stream.Collectors;
 public class BoardController {
 
     private final BoardService boardService;
+    private final FileStore fileStore;
 
     //게시글 폼 생성
     @GetMapping("board/new")
@@ -51,6 +62,12 @@ public class BoardController {
         }
 
         Board board = new Board(boardForm.getTitle(), boardForm.getWriter(), boardForm.getContent(),boardForm.getPassword());
+        List<MultipartFile> multipartFiles = boardForm.getMultipartFiles();
+
+        List<UploadFile> uploadFiles = fileStore.storeFiles(multipartFiles);
+        board.setUploadFiles(uploadFiles);
+
+
         Long boardId = boardService.CreateBoard(board);
 
 
@@ -65,6 +82,7 @@ public class BoardController {
 
         log.info("member = {} ",member);
 
+        //로그인 상태일시 멤버가 null이 아님
         if (member != null) {
             MemberLoginDto memberLoginDto = new MemberLoginDto();
             memberLoginDto.setUsername(member.getUsername());
@@ -79,12 +97,44 @@ public class BoardController {
 
         Board findOne = boardService.findOne(id);
         BoardDto boardDto = new BoardDto(findOne.getId(), findOne.getTitle(), findOne.getWriter(), findOne.getContent(),findOne.getCreatedTime());
+        boardDto.setUploadFiles(findOne.getUploadFiles());
 
         model.addAttribute("boardDto", boardDto);
 
 
 
         return "board/boardContent";
+    }
+
+    //파일 다운로드
+    @GetMapping("/attach/{boardId}")
+    public ResponseEntity<Resource> downloadAttach(@PathVariable Long boardId,
+                                                   @RequestParam String storeFileName) throws MalformedURLException {
+
+        String uploadFileName = null;
+
+        Board one = boardService.findOne(boardId);
+
+        List<UploadFile> uploadFiles = one.getUploadFiles();
+        for (UploadFile uploadFile : uploadFiles) {
+            if (uploadFile.getStoreFileName().equals(storeFileName)) {
+                uploadFileName = uploadFile.getUploadFileName();
+            }
+        }
+
+        if (uploadFileName==null) {
+            return null;
+        }
+        UrlResource urlResource = new UrlResource("file:" + fileStore.getFullPath(storeFileName));
+
+        String encodedUploadFileName = UriUtils.encode(uploadFileName, StandardCharsets.UTF_8);
+        String contentDisposition = "attachment; filename=\"" + encodedUploadFileName + "\"";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .body(urlResource);
+
+
     }
 
     //게시글 리스트

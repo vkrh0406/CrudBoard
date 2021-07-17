@@ -2,9 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: header"/>
 <style>
- .fieldError {
- border-color: #bd2130;
- }
+    .fieldError {
+        border-color: #bd2130;
+    }
 
 </style>
 <body>
@@ -14,18 +14,17 @@
 
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader(${username!=null}? ${username} : '')"/>
-    <form  th:object="${boardForm}" method="post">
+    <form th:object="${boardForm}" method="post">
         <div class="form-group">
             <label th:for="title">제목</label>
-            <input type="text"  th:field="*{title}" class="form-control"
+            <input type="text" th:field="*{title}" class="form-control"
                    th:class="${#fields.hasErrors('title')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('title')}"
                th:errors="*{title}">Incorrect date</p>
         </div>
         <div class="form-group">
             <label th:for="writer">작성자</label>
-            <input type="hidden" th:field="*{writer}" class="form-control">
-            <td th:text="*{writer}"></td>
+            <input type="text" th:field="*{writer}" class="form-control" disabled="disabled">
             <p th:if="${#fields.hasErrors('writer')}"
                th:errors="*{writer}">Incorrect date</p>
         </div>
@@ -33,17 +32,16 @@
             <label th:for="password">패스워드</label>
             <input type="text" th:field="*{password}" class="form-control"
                    placeholder="패스워드를 입력하세요"
-                   th:class="${#fields.hasErrors('password')}? 'form-control
-fieldError' : 'form-control'">
+                   th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('password')}"
-               th:errors="*{writer}">Incorrect date</p>
+               th:errors="*{password}">Incorrect date</p>
         </div>
         <div class="form-group">
             <label th:for="content">내용</label>
-            <input type="text"  th:field="*{content}" class="form-control"
-                   th:class="${#fields.hasErrors('content')}? 'form-control
-fieldError' : 'form-control'">
-            <p th:if="${#fields.hasErrors('content')}"
+            <textarea th:field="*{content}" class="form-control" style="margin: 0px; height: 254px; width: 100% ;"
+                      th:class="${#fields.hasErrors('content')}? 'form-control fieldError' : 'form-control'"/>
+
+                <p th:if="${#fields.hasErrors('content')}"
                th:errors="*{content}">Incorrect date</p>
         </div>
         <div class="form-group">

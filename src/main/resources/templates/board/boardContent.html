@@ -32,9 +32,17 @@
                 <td>수정일</td>
                 <td th:text="${#temporals.format(boardDto.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
             </tr>
+            <tr th:if="${boardDto.getUploadFiles().size()!=0}"><td>첨부파일 : </td></tr>
+            <tr th:each="uploadFile : ${boardDto.uploadFiles}">
+                <td> <a th:href="|@{/attach/{id} (id=${boardDto.id},storeFileName=${uploadFile.storeFileName})}|"
+                         th:text="${uploadFile.uploadFileName}" />
+                </td>
+            </tr>
+
 
             <tr>
-                <td><a href="#" th:href="@{/board/edit/{id} (id=${boardDto.id})}"/>수정</td>
+                <td><button type="button" button class="w-50 h-auto btn btn-primary btn-lg"
+                            th:onclick="|location.href='@{/board/edit/{id} (id=${boardDto.id})}'|" th:text="수정" /></td>
             </tr>
 
 
