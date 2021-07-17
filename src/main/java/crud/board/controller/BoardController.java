@@ -3,6 +3,7 @@ package crud.board.controller;
 
 import crud.board.FileStore;
 import crud.board.SessionConst;
+import crud.board.argumentresolver.Login;
 import crud.board.controller.form.BoardForm;
 import crud.board.domain.Board;
 import crud.board.domain.Member;
@@ -10,6 +11,7 @@ import crud.board.domain.UploadFile;
 import crud.board.dto.BoardDto;
 import crud.board.dto.MemberLoginDto;
 import crud.board.service.BoardService;
+import crud.board.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.rule.Mode;
@@ -45,23 +47,37 @@ public class BoardController {
 
     private final BoardService boardService;
     private final FileStore fileStore;
+    private final MemberService memberService;
 
     //게시글 폼 생성
     @GetMapping("board/new")
-    public String createBoardForm(Model model) {
-        model.addAttribute("boardForm", new BoardForm());
+    public String createBoardForm(Model model, @Login Member member) {
+
+        BoardForm boardForm = new BoardForm();
+        if (member != null) {
+            boardForm.setWriter(member.getUsername());
+            boardForm.setPassword("0000");
+            model.addAttribute("username", member.getUsername());
+        }
+        model.addAttribute("boardForm", boardForm);
 
         return "board/createdBoardForm";
     }
 
     //게시글 생성
     @PostMapping("board/new")
-    public String createBoard(@Valid BoardForm boardForm, BindingResult result,Model model) {
+    public String createBoard(@Valid BoardForm boardForm, BindingResult result, Model model, @Login Member member) {
         if (result.hasErrors()) {
             return "/board/createdBoardForm";
         }
 
-        Board board = new Board(boardForm.getTitle(), boardForm.getWriter(), boardForm.getContent(),boardForm.getPassword());
+        Board board = new Board(boardForm.getTitle(), boardForm.getWriter(), boardForm.getContent(), boardForm.getPassword());
+
+        if (member != null) {
+            board.setMember(member);
+        }
+
+
         List<MultipartFile> multipartFiles = boardForm.getMultipartFiles();
 
         List<UploadFile> uploadFiles = fileStore.storeFiles(multipartFiles);
@@ -71,36 +87,44 @@ public class BoardController {
         Long boardId = boardService.CreateBoard(board);
 
 
-        
-        return "redirect:/board/"+boardId;
+        return "redirect:/board/" + boardId;
 
     }
 
     //게시글 조회
     @GetMapping("board/{boardId}")
-    public String lookBoard(@PathVariable("boardId") Long id, Model model, @SessionAttribute(name = SessionConst.SESSION_LOGIN_MEMBER,required = false)Member member) {
+    public String lookBoard(@PathVariable("boardId") Long id, Model model, @Login Member member) {
 
-        log.info("member = {} ",member);
+        log.info("member = {} ", member);
+
+        Board findOne = boardService.findOne(id);
 
         //로그인 상태일시 멤버가 null이 아님
         if (member != null) {
             MemberLoginDto memberLoginDto = new MemberLoginDto();
             memberLoginDto.setUsername(member.getUsername());
             model.addAttribute("username", memberLoginDto.getUsername());
+
+            //게시글의 멤버가 null이 아닌 동시에 세션 멤버와 id가 같으면 자기가 쓴 글
+            if (findOne.getMember() != null && findOne.getMember().getId().equals(member.getId())) {
+                model.addAttribute("myBoard", "myBoard");
+            }
+
+
             log.info("username {}", memberLoginDto.getUsername());
         }
 
 
         System.out.println("id = " + id);
 
-       // model.setViewName("boardContent");
+        // model.setViewName("boardContent");
 
-        Board findOne = boardService.findOne(id);
-        BoardDto boardDto = new BoardDto(findOne.getId(), findOne.getTitle(), findOne.getWriter(), findOne.getContent(),findOne.getCreatedTime());
+
+        BoardDto boardDto = new BoardDto(findOne.getId(), findOne.getTitle(), findOne.getWriter(), findOne.getContent(), findOne.getCreatedTime());
         boardDto.setUploadFiles(findOne.getUploadFiles());
 
-        model.addAttribute("boardDto", boardDto);
 
+        model.addAttribute("boardDto", boardDto);
 
 
         return "board/boardContent";
@@ -122,7 +146,7 @@ public class BoardController {
             }
         }
 
-        if (uploadFileName==null) {
+        if (uploadFileName == null) {
             return null;
         }
         UrlResource urlResource = new UrlResource("file:" + fileStore.getFullPath(storeFileName));
@@ -139,10 +163,10 @@ public class BoardController {
 
     //게시글 리스트
     @GetMapping("board")
-    public String boardList(Model model, BoardSearch boardSearch,@PageableDefault(size = 10) Pageable pageable,
-                            @SessionAttribute(name = SessionConst.SESSION_LOGIN_MEMBER,required = false)Member member) {
+    public String boardList(Model model, BoardSearch boardSearch, @PageableDefault(size = 10) Pageable pageable,
+                            @Login Member member) {
 
-        log.info("member = {} ",member);
+        log.info("member = {} ", member);
 
         if (member != null) {
             MemberLoginDto memberLoginDto = new MemberLoginDto();
@@ -156,23 +180,20 @@ public class BoardController {
         Page<BoardDto> searchResults = boardService.search(boardSearch, pageable);
 
 
-
         model.addAttribute("boardSearch", boardSearch);
         model.addAttribute("boardDto", searchResults);
 
         return "board/boardList";
 
     }//게시글 리스트
+
     @GetMapping("board/api")
     @ResponseBody
-    public Page<BoardDto> boardListApi(Model model, BoardSearch boardSearch,@PageableDefault(size = 10) Pageable pageable) {
-
+    public Page<BoardDto> boardListApi(Model model, BoardSearch boardSearch, @PageableDefault(size = 10) Pageable pageable) {
 
 
         //검색
         Page<BoardDto> searchResults = boardService.search(boardSearch, pageable);
-
-
 
 
         return searchResults;
@@ -181,10 +202,23 @@ public class BoardController {
 
     //게시글 수정 폼
     @GetMapping("board/edit/{id}")
-    public String updateBoardForm(@PathVariable("id")Long id,Model model) {
+    public String updateBoardForm(@PathVariable("id") Long id, Model model, @Login Member member) {
 
         Board findOne = boardService.findOne(id);
         BoardForm boardForm = new BoardForm();
+
+        //로그인 유무
+        if (member != null) {
+            model.addAttribute("username", member.getUsername());
+        }
+
+        //자기 게시글 유무
+        if (member != null && findOne.getMember() != null && findOne.getMember().getId().equals(member.getId())) {
+            model.addAttribute("myBoard", "myBoard");
+            boardForm.setPassword("0000");
+        }
+
+
         boardForm.setTitle(findOne.getTitle());
         boardForm.setWriter(findOne.getWriter());
         boardForm.setContent(findOne.getContent());
@@ -200,26 +234,32 @@ public class BoardController {
 
     //게시글 수정
     @PostMapping("board/edit/{id}")
-    public String updateBoard(@PathVariable("id")Long id, @Valid BoardForm boardForm) {
+    public String updateBoard(@PathVariable("id") Long id, @Valid BoardForm boardForm, @Login Member member, RedirectAttributes redirectAttributes) {
 
-        System.out.println("boardForm = " + boardForm.getId());
 
         Board findOne = boardService.findOne(boardForm.getId());
 
-        if(!boardForm.getPassword().equals(findOne.getPassword())){
+        if (member != null && findOne.getMember() != null && findOne.getMember().getId().equals(member.getId())) {
+            boardService.update(findOne.getId(), boardForm.getTitle(), boardForm.getContent());
+            redirectAttributes.addAttribute("boardId", boardForm.getId());
+            return "redirect:/board/{boardId}";
+        }
+
+
+        if (!boardForm.getPassword().equals(findOne.getPassword()) && findOne.getMember() == null) {
             return "redirect:/board/edit/" + boardForm.getId();
         }
 
 
-        boardService.update(findOne.getId(),boardForm.getTitle(),boardForm.getContent());
+        boardService.update(findOne.getId(), boardForm.getTitle(), boardForm.getContent());
 
         return "redirect:/board";
     }
 
-    //게시글 삭제
+    //게시글 삭제 (비밀번호로)
     @PostMapping("board/delete/{id}")
-    public String deleteBoard(@PathVariable("id") Long id, @RequestParam("password") String password, RedirectAttributes redirectAttributes) throws IllegalAccessException {
-
+    public String deleteBoard(@PathVariable("id") Long id, @RequestParam("password") String password,
+                              RedirectAttributes redirectAttributes) throws IllegalAccessException {
 
 
         try {
@@ -233,6 +273,53 @@ public class BoardController {
 
 
         return "redirect:/board";
+
+    }
+
+    //게시글 삭제 (자기글 삭제)
+    @PostMapping("board/delete/{id}/my")
+    public String deleteMyBoard(@PathVariable("id") Long id, @RequestParam("password") String password,
+                                @Login Member member,
+                                RedirectAttributes redirectAttributes) throws IllegalAccessException {
+
+
+        if (member != null) {
+
+            try {
+                boardService.delete(id, member);
+            } catch (Exception e) {
+                redirectAttributes.addAttribute("id", id);
+                log.debug(e.getMessage());
+
+                return "redirect:/board/{id}";
+            }
+        }
+
+
+        return "redirect:/board";
+
+    }
+
+    @GetMapping("/board/myBoards")
+    public String findMyBoards(Model model, BoardSearch boardSearch, @PageableDefault(size = 10) Pageable pageable,
+                               @Login Member member) {
+        if (member == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("username", member.getUsername());
+
+        Member findMember = memberService.findMemberById(member.getId());
+
+        List<Board> boards = findMember.getBoards();
+        List<BoardDto> boardDto = boards.stream()
+                .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(), o.getUpdatedTime()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("boardDto", boardDto);
+
+        return "/board/myBoards";
+
 
     }
 }

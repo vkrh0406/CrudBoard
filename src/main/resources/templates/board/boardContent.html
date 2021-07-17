@@ -51,8 +51,7 @@
             </tbody>
         </table>
         <div>
-            <tr>
-
+            <tr th:if="${myBoard==null}">
                 <td>패스워드</td>
                 <form role="form" th:object="${boardDto}" th:action="@{/board/delete/{id} (id=${boardDto.id})}"
                       method="post">
@@ -62,6 +61,16 @@
                     <button type="submit" class="btn btn-primary">삭제</button>
                 </form>
             </tr>
+            <tr th:if="${myBoard}">
+                <form role="form" th:object="${boardDto}" th:action="@{/board/delete/{id}/my (id=${boardDto.id})}"
+                      method="post">
+
+                    <input type="hidden" name="password" value="0000">
+                    <!--                    <input type="hidden" th:field="*{id}">-->
+                    <button type="submit" class="btn btn-primary">삭제</button>
+                </form>
+            </tr>
+
         </div>
     </div>
     <div th:replace="fragments/footer :: footer"/>

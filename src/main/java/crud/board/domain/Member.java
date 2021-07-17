@@ -32,8 +32,13 @@ public class Member {
     private Address address;
 
 
+    public void addBoard(Board board) {
+        this.boards.add(board);
+    }
+
     public Member() {
     }
+
 
     public Member(String loginId, String password, String username, int age, Address address) {
         this.loginId = loginId;

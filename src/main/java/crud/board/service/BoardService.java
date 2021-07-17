@@ -3,6 +3,7 @@ package crud.board.service;
 
 import crud.board.controller.BoardSearch;
 import crud.board.domain.Board;
+import crud.board.domain.Member;
 import crud.board.dto.BoardDto;
 import crud.board.repository.BoardRepository;
 import lombok.AccessLevel;
@@ -52,6 +53,10 @@ public class BoardService {
     public void delete(Long boardId,String password) throws IllegalAccessException {
 
         Board findOne = boardRepository.findOne(boardId);
+        if (findOne.getMember() != null) {
+            throw new IllegalAccessException("주인이 있는 글입니다");
+        }
+
         if (!findOne.getPassword().equals(password)) {
 
             throw new IllegalAccessException("패스워드가 다릅니다");
@@ -59,6 +64,19 @@ public class BoardService {
         else {
             boardRepository.delete(findOne);
         }
+
+
+    }
+    public void delete(Long boardId, Member member) throws IllegalAccessException {
+
+        Board findOne = boardRepository.findOne(boardId);
+        if (findOne.getMember().getId().equals(member.getId())) {
+            boardRepository.delete(findOne);
+        }
+        else{
+            throw new IllegalAccessException("글의 주인이 아니면 삭제가 불가능합니다.");
+        }
+
 
 
     }

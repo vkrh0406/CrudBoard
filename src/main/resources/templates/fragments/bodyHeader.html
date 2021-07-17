@@ -16,6 +16,10 @@
                     th:onclick="|location.href='@{/member/new}'|">
                 회원가입</button>
         </div>
+        <div class="col" th:if="${not #strings.isEmpty(username)}">
+            <button class="w-auto btn btn-primary btn-lg" type="button"
+                    th:onclick="|location.href='@{/board/myBoards}'|">내가 작성한 글</button>
+        </div>
         <div class="col">
             <button class="w-75 btn btn-primary btn-lg" type="button" th:if="${#strings.isEmpty(username)}"
                     th:onclick="|location.href='@{/member/login}'|">

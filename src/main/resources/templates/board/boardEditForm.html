@@ -24,13 +24,13 @@
         </div>
         <div class="form-group">
             <label th:for="writer">작성자</label>
-            <input type="text" th:field="*{writer}" class="form-control" disabled="disabled">
+            <input type="text" th:field="*{writer}" class="form-control" readonly="readonly">
             <p th:if="${#fields.hasErrors('writer')}"
                th:errors="*{writer}">Incorrect date</p>
         </div>
-        <div class="form-group">
+        <div class="form-group" >
             <label th:for="password">패스워드</label>
-            <input type="text" th:field="*{password}" class="form-control"
+            <input type="text" th:field="*{password}" class="form-control" th:type="${myBoard!=null}? 'hidden' : 'text'"
                    placeholder="패스워드를 입력하세요"
                    th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'">
             <p th:if="${#fields.hasErrors('password')}"
@@ -44,6 +44,7 @@
                 <p th:if="${#fields.hasErrors('content')}"
                th:errors="*{content}">Incorrect date</p>
         </div>
+
         <div class="form-group">
             <input type="hidden" th:field="*{id}" />
         </div>

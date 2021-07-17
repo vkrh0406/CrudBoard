@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader(${username!=null}? ${username} : '')"/>
+    <div>
+        <form th:object="${boardSearch}" class="form-inline">
+            <div class="form-group mx-sm-1 mb-2">
+                <select th:field="*{searchType}" class="form-control">
+                    <option value="all">전체</option>
+                    <option value="title">제목</option>
+                    <option value="content">내용</option>
+                    <option value="writer">작성자</option>
+                    <option value="titleAndContent">제목과 내용</option>
+                </select>
+            </div>
+            <div class="form-group mb-2">
+                <input type="text" th:field="*{keyword}" class="form-control" placeholder="키워드"/>
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">검색</button>
+
+        </form>
+    </div>
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="board : ${boardDto}" th:onclick="|location.href='@{/board/{id} (id=${board.id})}'|" onmouseover='this.style.backgroundColor="#b8dcee"'
+                onmouseout='this.style.backgroundColor=""' style="cursor:hand"
+            >
+
+                    <td th:text="${board.id}"></td>
+                    <td th:text="${board.title}"></td>
+                    <td th:text="${board.writer}"></td>
+                    <td th:text="${#temporals.format(board.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
+
+
+
+                <td><button type="button" button class="w-auto h-auto btn btn-primary btn-lg"
+                            th:onclick="|location.href='@{/board/edit/{id} (id=${board.id})}'|" th:text="수정" /></td>
+
+
+            </tr>
+
+
+            </tbody>
+
+
+        </table>
+
+
+
+
+
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+</html>

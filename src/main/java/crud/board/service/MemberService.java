@@ -16,6 +16,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
 
+    public Member findMemberById(Long id) {
+        Optional<Member> memberById = memberRepository.findMemberById(id);
+
+        return memberById.orElse(null);
+    }
+
     public Long saveMember(Member member) {
 
         Optional<Member> memberByLoginId = memberRepository.findMemberByLoginId(member.getLoginId());
