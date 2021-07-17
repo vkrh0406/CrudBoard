@@ -5,12 +5,16 @@ import crud.board.FileStore;
 import crud.board.SessionConst;
 import crud.board.argumentresolver.Login;
 import crud.board.controller.form.BoardForm;
+import crud.board.controller.form.CommentForm;
 import crud.board.domain.Board;
+import crud.board.domain.Comment;
 import crud.board.domain.Member;
 import crud.board.domain.UploadFile;
 import crud.board.dto.BoardDto;
+import crud.board.dto.CommentDto;
 import crud.board.dto.MemberLoginDto;
 import crud.board.service.BoardService;
+import crud.board.service.CommentService;
 import crud.board.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +52,7 @@ public class BoardController {
     private final BoardService boardService;
     private final FileStore fileStore;
     private final MemberService memberService;
+    private final CommentService commentService;
 
     //게시글 폼 생성
     @GetMapping("board/new")
@@ -75,6 +80,9 @@ public class BoardController {
 
         if (member != null) {
             board.setMember(member);
+            Member findMember = memberService.findMemberById(member.getId());
+            findMember.addBoard(board);
+
         }
 
 
@@ -95,9 +103,12 @@ public class BoardController {
     @GetMapping("board/{boardId}")
     public String lookBoard(@PathVariable("boardId") Long id, Model model, @Login Member member) {
 
-        log.info("member = {} ", member);
+        //log.info("member = {} ", member);
+
 
         Board findOne = boardService.findOne(id);
+
+
 
         //로그인 상태일시 멤버가 null이 아님
         if (member != null) {
@@ -115,16 +126,32 @@ public class BoardController {
         }
 
 
-        System.out.println("id = " + id);
-
         // model.setViewName("boardContent");
 
 
+        //게시글 내용 불러와서 Dto에 담음
         BoardDto boardDto = new BoardDto(findOne.getId(), findOne.getTitle(), findOne.getWriter(), findOne.getContent(), findOne.getCreatedTime());
         boardDto.setUploadFiles(findOne.getUploadFiles());
 
 
+
+        //게시글 댓글 불러와서 Dto에 담기
+        List<Comment> comments = findOne.getComments();
+        List<CommentDto> commentDto = comments.stream()
+                .map(o -> new CommentDto(o.getId(),o.getWriter(), o.getContent(), o.getUpdatedTime()))
+                .collect(Collectors.toList());
+
+        //새 댓글 폼
+        CommentForm commentForm = new CommentForm();
+        if (member != null) {
+            commentForm.setWriter(member.getUsername());
+            commentForm.setPassword("0000"); //패스워드 무쓸모인데 valid 걸리면 진행이 안돼서 디폴트 패스워드를 넣음
+        }
+
+
         model.addAttribute("boardDto", boardDto);
+        model.addAttribute("commentDto", commentDto);
+        model.addAttribute("commentForm", commentForm);
 
 
         return "board/boardContent";
@@ -259,7 +286,20 @@ public class BoardController {
     //게시글 삭제 (비밀번호로)
     @PostMapping("board/delete/{id}")
     public String deleteBoard(@PathVariable("id") Long id, @RequestParam("password") String password,
-                              RedirectAttributes redirectAttributes) throws IllegalAccessException {
+                              RedirectAttributes redirectAttributes, @Login Member member) throws IllegalAccessException {
+
+        if (member != null) {
+            Member findMember = memberService.findMemberById(member.getId());
+            Board findBoard = boardService.findOne(id);
+
+            if (findBoard.getMember().getId().equals(findMember.getId())) {
+                boardService.delete(findBoard.getId(),member);
+                return "redirect:/board";
+            }
+
+
+
+        }
 
 
         try {

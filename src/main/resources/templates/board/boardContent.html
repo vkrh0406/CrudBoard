@@ -24,7 +24,8 @@
                 <tr>
 
                     <td>글 내용</td>
-                    <td><textarea style="margin: 0px; height: 254px; width: 100% ;" th:text="${boardDto.content}"></textarea>
+                    <td><textarea style="margin: 0px; height: 254px; width: 100% ;" readonly="readonly"
+                                  th:text="${boardDto.content}"></textarea>
                     </td>
                 </tr>
             </div>
@@ -32,20 +33,22 @@
                 <td>수정일</td>
                 <td th:text="${#temporals.format(boardDto.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
             </tr>
-            <tr th:if="${boardDto.getUploadFiles().size()!=0}"><td>첨부파일 : </td></tr>
+            <tr th:if="${boardDto.getUploadFiles().size()!=0}">
+                <td>첨부파일 :</td>
+            </tr>
             <tr th:each="uploadFile : ${boardDto.uploadFiles}">
-                <td> <a th:href="|@{/attach/{id} (id=${boardDto.id},storeFileName=${uploadFile.storeFileName})}|"
-                         th:text="${uploadFile.uploadFileName}" />
+                <td><a th:href="|@{/attach/{id} (id=${boardDto.id},storeFileName=${uploadFile.storeFileName})}|"
+                       th:text="${uploadFile.uploadFileName}"/>
                 </td>
             </tr>
 
 
             <tr>
-                <td><button type="button" button class="w-50 h-auto btn btn-primary btn-lg"
-                            th:onclick="|location.href='@{/board/edit/{id} (id=${boardDto.id})}'|" th:text="수정" /></td>
+                <td>
+                    <button type="button" button class="w-50 h-auto btn btn-primary btn-lg"
+                            th:onclick="|location.href='@{/board/edit/{id} (id=${boardDto.id})}'|" th:text="수정"/>
+                </td>
             </tr>
-
-
 
 
             </tbody>
@@ -62,7 +65,7 @@
                 </form>
             </tr>
             <tr th:if="${myBoard}">
-                <form role="form" th:object="${boardDto}" th:action="@{/board/delete/{id}/my (id=${boardDto.id})}"
+                <form role="form" th:object="${boardDto}" th:action="@{/board/delete/{id} (id=${boardDto.id})}"
                       method="post">
 
                     <input type="hidden" name="password" value="0000">
@@ -72,8 +75,79 @@
             </tr>
 
         </div>
+
+        <div>
+            <table class="table table-striped">
+                <thead> <strong>댓글</strong>
+                <tr>
+
+                    <th>작성자</th>
+                    <th>내용</th>
+                    <th>작성일</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="comment : ${commentDto}" onmouseover='this.style.backgroundColor="#b8dcee"'
+                    onmouseout='this.style.backgroundColor=""' style="cursor:hand">
+
+                    <td width="100" th:text="${comment.writer}"></td>
+                    <td width="400" th:text="${comment.content}"></td>
+                    <td th:text="${#temporals.format(comment.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
+
+
+                    <td>
+                        <button type="button" button class="w-auto h-auto btn btn-primary btn-lg" th:if="${username!=null}"
+                                th:onclick="|location.href='@{/comment/delete/{id} (id=${comment.id}, boardId=${boardDto.id})}'|" th:text="삭제"/>
+                    </td>
+
+                </tr>
+                </tbody>
+
+
+            </table>
+            <div>
+
+                    <form role="form" action="/comment/new" th:object="${commentForm}" enctype="multipart/form-data"
+                          method="post">
+
+                            <label th:for="writer">작성자</label>
+                            <input type="text"
+                                   th:field="*{writer}" class="form-control"
+                                   placeholder="작성자 이름을 입력하세요" th:readonly="${username!=null} ? 'readOnly'"
+                                   th:class="${#fields.hasErrors('writer')}? 'form-control fieldError' : 'form-control'">
+                            <p th:if="${#fields.hasErrors('writer')}"
+                               th:errors="*{writer}">Incorrect date</p>
+
+
+                            <label th:for="password" th:if="${username==null} ">패스워드</label>
+                            <input type="password" th:field="*{password}" class="form-control" th:type="${username!=null} ? 'hidden' : 'password'"
+                                   placeholder="패스워드를 입력하세요 "
+                                   th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'">
+                            <p th:if="${#fields.hasErrors('password')}"
+                               th:errors="*{password}">Incorrect date</p>
+
+
+                            <label th:for="content">내용</label>
+                            <input type="text"  th:field="*{content}" class="form-control"
+                                      placeholder="내용을 입력하세요"
+                                      th:class="${#fields.hasErrors('content')}? 'form-control fieldError' : 'form-control'"/>
+
+                            <p th:if="${#fields.hasErrors('content')}"
+                               th:errors="*{content}">Incorrect date</p>
+
+                        <input type="hidden" name="boardId" th:value="${boardDto.id}" class="form-control"/>
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                    <br/>
+
+
+
+            </div>
+            <div th:replace="fragments/footer :: footer"/>
+        </div> <!-- /container -->
     </div>
-    <div th:replace="fragments/footer :: footer"/>
-</div> <!-- /container -->
+</div>
 </body>
 </html>

@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,9 +43,16 @@ public class Board {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     public void setMember(Member member) {
         this.member = member;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setBoard(this);
     }
 
     protected Board() {

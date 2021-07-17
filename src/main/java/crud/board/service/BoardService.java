@@ -3,6 +3,7 @@ package crud.board.service;
 
 import crud.board.controller.BoardSearch;
 import crud.board.domain.Board;
+import crud.board.domain.Comment;
 import crud.board.domain.Member;
 import crud.board.dto.BoardDto;
 import crud.board.repository.BoardRepository;
@@ -27,6 +28,7 @@ public class BoardService {
 
 
     private final BoardRepository boardRepository;
+
 
     //글 생성
     public Long CreateBoard(Board board) {
@@ -53,6 +55,7 @@ public class BoardService {
     public void delete(Long boardId,String password) throws IllegalAccessException {
 
         Board findOne = boardRepository.findOne(boardId);
+
         if (findOne.getMember() != null) {
             throw new IllegalAccessException("주인이 있는 글입니다");
         }

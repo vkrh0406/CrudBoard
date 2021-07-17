@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
+@Data
 public class BoardDto {
 
     private Long id;

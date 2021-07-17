@@ -28,12 +28,20 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Board> boards = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member")
+    private List<Comment> comments = new ArrayList<>();
+
     @Embedded
     private Address address;
 
 
     public void addBoard(Board board) {
         this.boards.add(board);
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+        comment.setMember(this);
     }
 
     public Member() {
