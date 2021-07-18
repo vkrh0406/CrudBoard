@@ -73,7 +73,7 @@ public class BoardController {
     @PostMapping("board/new")
     public String createBoard(@Valid BoardForm boardForm, BindingResult result, Model model, @Login Member member) {
         if (result.hasErrors()) {
-            return "/board/createdBoardForm";
+            return "board/createdBoardForm";
         }
 
         Board board = new Board(boardForm.getTitle(), boardForm.getWriter(), boardForm.getContent(), boardForm.getPassword());
@@ -358,7 +358,7 @@ public class BoardController {
 
         model.addAttribute("boardDto", boardDto);
 
-        return "/board/myBoards";
+        return "board/myBoards";
 
 
     }

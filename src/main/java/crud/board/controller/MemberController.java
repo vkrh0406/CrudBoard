@@ -28,14 +28,14 @@ public class MemberController {
     @GetMapping("/new")
     public String createMemberForm(@ModelAttribute MemberForm memberForm) {
 
-        return "/member/createMemberForm";
+        return "member/createMemberForm";
     }
 
     @PostMapping("/new")
     public String createMember(@ModelAttribute MemberForm memberForm, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
-            return "/member/createMemberForm";
+            return "member/createMemberForm";
         }
 
         Member member = new Member(memberForm.getLoginId(), memberForm.getPassword(), memberForm.getName(), memberForm.getAge(),
@@ -59,13 +59,13 @@ public class MemberController {
                               HttpServletRequest request, @RequestParam(defaultValue = "/") String requestURI) {
 
         if (bindingResult.hasErrors()) {
-            return "/member/loginForm";
+            return "member/loginForm";
         }
         Member loginMember = memberService.login(loginForm.getLoginId(), loginForm.getPassword());
 
         if (loginMember == null) {
             bindingResult.reject("LoginFail","아이디나 비밀번호가 틀립니다");
-            return "/member/loginForm";
+            return "member/loginForm";
         }
 
         HttpSession session = request.getSession();

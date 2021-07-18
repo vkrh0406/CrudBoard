@@ -51,7 +51,7 @@ public class CommentController {
 
     }
 
-    @GetMapping("/comment/delete/{id}")
+    @GetMapping("comment/delete/{id}")
     public String deleteComment(@PathVariable Long id, @RequestParam Long boardId,@Login Member member,
                                 RedirectAttributes redirectAttributes) {
 
