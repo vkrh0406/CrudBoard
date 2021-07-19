@@ -8,7 +8,7 @@
 
 </style>
 <body>
-<div class="container">
+<div class="container-lg">
     <div th:replace="fragments/bodyHeader :: bodyHeader(${username!=null}? ${username} : '')"/>
     <form role="form" action="/board/new" th:object="${boardForm}" enctype="multipart/form-data"
                 method="post">

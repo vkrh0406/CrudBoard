@@ -2,19 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: header"/>
 <body>
-<div class="container">
+<div class="container-lg">
     <div th:replace="fragments/bodyHeader :: bodyHeader(${username!=null}? ${username} : '')"/>
     <div>
         <table class="table table-striped">
 
             <tbody th:object="${boardDto}">
             <tr>
-                <td>#</td>
-                <td th:text="${boardDto.id}"></td>
+                <td class="col-1">#</td>
+                <td class="col-8" th:text="${boardDto.id}"></td>
             </tr>
+
             <tr>
-                <td>제목</td>
-                <td th:text="${boardDto.title}"></td>
+                <td class="col-1">제목</td>
+                <td class="col-3" th:text="${boardDto.title}"></td>
             </tr>
             <tr>
                 <td>작성자</td>
@@ -33,10 +34,12 @@
                 <td>수정일</td>
                 <td th:text="${#temporals.format(boardDto.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
             </tr>
-            <tr th:if="${boardDto.getUploadFiles().size()!=0}">
-                <td>첨부파일 :</td>
-            </tr>
+<!--            <tr th:if="${boardDto.getUploadFiles().size()!=0}">-->
+<!--                <td>첨부파일 :</td>-->
+
+<!--            </tr>-->
             <tr th:each="uploadFile : ${boardDto.uploadFiles}">
+                <td>첨부파일 :</td>
                 <td><a th:href="|@{/attach/{id} (id=${boardDto.id},storeFileName=${uploadFile.storeFileName})}|"
                        th:text="${uploadFile.uploadFileName}"/>
                 </td>
@@ -106,20 +109,20 @@
 
 
             </table>
-            <div>
-
-                    <form role="form" action="/comment/new" th:object="${commentForm}" enctype="multipart/form-data"
+            <div class="row">
+                    <form role="form" action="/comment/new" th:object="${commentForm}" enctype="multipart/form-data" class="row gy-2 gx-3 align-items-center"
                           method="post">
 
-                            <label th:for="writer">작성자</label>
+                        <div class="col-2">
+                            <label th:for="writer">댓글 작성자</label>
                             <input type="text"
-                                   th:field="*{writer}" class="form-control"
+                                   th:field="*{writer}" class="form-control-sm"
                                    placeholder="작성자 이름을 입력하세요" th:readonly="${username!=null} ? 'readOnly'"
                                    th:class="${#fields.hasErrors('writer')}? 'form-control fieldError' : 'form-control'">
                             <p th:if="${#fields.hasErrors('writer')}"
                                th:errors="*{writer}">Incorrect date</p>
-
-
+                        </div>
+                        <div class="col-2">
                             <label th:for="password" th:if="${username==null} ">패스워드</label>
                             <input type="password" th:field="*{password}" class="form-control" th:type="${username!=null} ? 'hidden' : 'password'"
                                    placeholder="패스워드를 입력하세요 "
@@ -127,18 +130,24 @@
                             <p th:if="${#fields.hasErrors('password')}"
                                th:errors="*{password}">Incorrect date</p>
 
-
+                        </div>
+                        <div class="col-7">
                             <label th:for="content">내용</label>
                             <input type="text"  th:field="*{content}" class="form-control"
-                                      placeholder="내용을 입력하세요"
-                                      th:class="${#fields.hasErrors('content')}? 'form-control fieldError' : 'form-control'"/>
+                                   placeholder="내용을 입력하세요"
+                                   th:class="${#fields.hasErrors('content')}? 'form-control fieldError' : 'form-control'"/>
 
                             <p th:if="${#fields.hasErrors('content')}"
                                th:errors="*{content}">Incorrect date</p>
 
-                        <input type="hidden" name="boardId" th:value="${boardDto.id}" class="form-control"/>
+                            <input type="hidden" name="boardId" th:value="${boardDto.id}" class="form-control"/>
 
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                        <div class="col-1">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+
+                        </div>
+
                     </form>
                     <br/>
 
