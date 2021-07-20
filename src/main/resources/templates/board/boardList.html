@@ -33,7 +33,7 @@
                 <th class="col-4">제목</th>
                 <th class="col-2">작성자</th>
                 <th class="col-2">작성일</th>
-                <th class="col-1">수정버튼</th>
+                <th class="col-1">조회수</th>
 
             </tr>
             </thead>
@@ -46,11 +46,7 @@
                     <td th:text="${board.title}"></td>
                     <td th:text="${board.writer}"></td>
                     <td th:text="${#temporals.format(board.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
-
-
-
-                <td><button type="button" button class="w-auto h-auto btn btn-primary btn-sm"
-                            th:onclick="|location.href='@{/board/edit/{id} (id=${board.id})}'|" th:text="수정" /></td>
+                    <td th:text="${board.views}"></td>
 
 
             </tr>

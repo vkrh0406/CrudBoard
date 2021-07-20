@@ -28,6 +28,7 @@ public class Board {
 
     private String password;
 
+    private int views;
 
 
     @ElementCollection
@@ -46,10 +47,18 @@ public class Board {
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
     public void setMember(Member member) {
         this.member = member;
     }
 
+    public void addViews(){
+        views+=1;
+    }
     public void addComment(Comment comment) {
         comments.add(comment);
         comment.setBoard(this);

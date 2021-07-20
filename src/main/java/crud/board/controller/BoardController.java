@@ -130,7 +130,7 @@ public class BoardController {
 
 
         //게시글 내용 불러와서 Dto에 담음
-        BoardDto boardDto = new BoardDto(findOne.getId(), findOne.getTitle(), findOne.getWriter(), findOne.getContent(), findOne.getCreatedTime());
+        BoardDto boardDto = new BoardDto(findOne.getId(), findOne.getTitle(), findOne.getWriter(), findOne.getContent(),findOne.getViews(), findOne.getCreatedTime());
         boardDto.setUploadFiles(findOne.getUploadFiles());
 
 
@@ -353,7 +353,7 @@ public class BoardController {
 
         List<Board> boards = findMember.getBoards();
         List<BoardDto> boardDto = boards.stream()
-                .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(), o.getUpdatedTime()))
+                .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(),o.getViews(), o.getUpdatedTime()))
                 .collect(Collectors.toList());
 
         model.addAttribute("boardDto", boardDto);

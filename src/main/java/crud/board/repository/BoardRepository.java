@@ -53,7 +53,7 @@ public class BoardRepository {
 
     public Page<BoardDto> findAll(Pageable pageable) {
         QueryResults<BoardDto> boardDtoQueryResults = queryFactory
-                .select(new QBoardDto(board.id, board.title, board.writer, board.content, board.updatedTime))
+                .select(new QBoardDto(board.id, board.title, board.writer, board.content, board.views, board.updatedTime))
                 .from(board)
                 .orderBy(board.id.desc())
                 .limit(pageable.getPageSize())
@@ -78,7 +78,7 @@ public class BoardRepository {
     public Page<BoardDto> searchBoard(BoardSearch boardSearch, Pageable pageable) {
 
         List<BoardDto> content = queryFactory
-                .select(new QBoardDto(board.id, board.title, board.writer, board.content, board.updatedTime))
+                .select(new QBoardDto(board.id, board.title, board.writer, board.content,board.views, board.updatedTime))
                 .from(board)
                 .where(searchCondition(boardSearch.getTitle(), boardSearch.getContent(), boardSearch.getWriter()))
                 .offset(pageable.getOffset())

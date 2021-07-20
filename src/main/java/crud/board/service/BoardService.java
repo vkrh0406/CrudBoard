@@ -41,8 +41,13 @@ public class BoardService {
     }
 
     //글 하나 찾기
+    @Transactional
     public Board findOne(Long boardId) {
-        return boardRepository.findOne(boardId);
+
+
+        Board findOne = boardRepository.findOne(boardId);
+        findOne.setViews(findOne.getViews()+1);
+        return findOne;
     }
 
     //글 제목, 내용 업데이트

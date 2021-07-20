@@ -21,6 +21,10 @@
                 <td>작성자</td>
                 <td th:text="${boardDto.writer}"></td>
             </tr>
+            <tr>
+                <td>조회수</td>
+                <td th:text="${boardDto.views}"></td>
+            </tr>
             <div>
                 <tr>
 
@@ -48,7 +52,7 @@
 
             <tr>
                 <td>
-                    <button type="button" button class="w-50 h-auto btn btn-primary btn-lg"
+                    <button type="button" button class="w-auto h-auto btn btn-primary btn-lg"
                             th:onclick="|location.href='@{/board/edit/{id} (id=${boardDto.id})}'|" th:text="수정"/>
                 </td>
             </tr>
