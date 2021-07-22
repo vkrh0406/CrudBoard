@@ -36,6 +36,11 @@ public class InitDb {
 
         public void initDb(){
 
+
+            if (boardRepository.findAll(PageRequest.of(0,10)).getContent().size() != 0) {
+                return;
+            }
+
             Page<BoardDto> all = boardRepository.findAll(PageRequest.of(0,10));
             if (all.getContent().size() > 0) {
                 return;

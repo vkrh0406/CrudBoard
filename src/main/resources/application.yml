@@ -1,5 +1,5 @@
 server:
-  address: 172.31.13.30
+  address: 172.31.13.28
 #  address: localhost
   port: 8080
 spring:
@@ -10,11 +10,7 @@ spring:
     username: river
     password: qkfka12
     driver-class-name: org.mariadb.jdbc.Driver
-#    hikari:
-#      driver-class-name: org.mariadb.jdbc.Driver
-#      jdbc-url: jdbc:mariadb://3.35.140.92:3306/crudBoard
-#      username: river
-#      password:
+
   jpa:
     hibernate:
       ddl-auto: create
