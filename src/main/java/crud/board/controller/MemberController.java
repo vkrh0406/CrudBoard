@@ -42,7 +42,12 @@ public class MemberController {
         Member member = new Member(memberForm.getLoginId(), memberForm.getPassword(), memberForm.getName(), memberForm.getAge(),
                 new Address(memberForm.getCity(), memberForm.getStreet(), memberForm.getZipcode()));
 
-        memberService.saveMember(member);
+        Long savedMemberID = memberService.saveMember(member);
+
+        if (savedMemberID == null) {
+            bindingResult.reject("로그인 아이디가 중복입니다.", "로그인 아이디가 중복입니다.");
+            return "member/createMemberForm";
+        }
 
 
         return "redirect:/board";
