@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @Controller
 @Slf4j
@@ -32,7 +33,7 @@ public class MemberController {
     }
 
     @PostMapping("/new")
-    public String createMember(@ModelAttribute MemberForm memberForm, BindingResult bindingResult, Model model) {
+    public String createMember(@ModelAttribute @Valid MemberForm memberForm, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
             return "member/createMemberForm";
