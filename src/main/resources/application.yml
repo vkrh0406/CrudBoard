@@ -1,6 +1,6 @@
 server:
-  address: 172.31.13.28
-#  address: localhost
+  address: 172.31.7.28
+//  address: localhost
   port: 8080
 spring:
   profiles:
@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         # show_sql: true
