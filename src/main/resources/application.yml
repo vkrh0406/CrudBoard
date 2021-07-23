@@ -1,6 +1,6 @@
 server:
   address: 172.31.7.28
-//  address: localhost
+#  address: localhost
   port: 8080
 spring:
   profiles:
