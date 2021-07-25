@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class FileStore {
 
-    private String fileDir = "/home/ec2-user/spring/files/";
+    private String fileDir = "/home/ubuntu/spring/files/";
 
     public String getFullPath(String filename) {
         return fileDir + filename;
