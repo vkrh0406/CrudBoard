@@ -45,10 +45,10 @@
                     <td th:text="${board.id}"></td>
                     <td>
                         <span th:text="${board.title}"></span>
-                        <span th:text="'  [' + ${board.commentCount} + ']'"></span>
+                        <span th:text="'  [' + ${board.commentCount} + ']'" style="color: #0d6efd"></span>
                     </td>
                     <td th:text="${board.writer}"></td>
-                    <td th:text="${#temporals.format(board.updatedTime, 'yyyy-MM-dd HH:mm')}" bgcolor="#5f9ea0"></td>
+                    <td th:text="${#temporals.format(board.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
                     <td th:text="${board.views}"></td>
 
 
