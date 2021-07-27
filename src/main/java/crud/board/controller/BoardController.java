@@ -106,7 +106,7 @@ public class BoardController {
         //log.info("member = {} ", member);
 
 
-        Board findOne = boardService.findOne(id);
+        Board findOne = boardService.findOneAndUpdateView(id);
 
 
 
@@ -130,7 +130,7 @@ public class BoardController {
 
 
         //게시글 내용 불러와서 Dto에 담음
-        BoardDto boardDto = new BoardDto(findOne.getId(), findOne.getTitle(), findOne.getWriter(), findOne.getContent(),findOne.getViews(), findOne.getCreatedTime());
+        BoardDto boardDto = new BoardDto(findOne.getId(), findOne.getTitle(), findOne.getWriter(), findOne.getContent(),findOne.getViews(), findOne.getCreatedTime(),findOne.getComments().size());
         boardDto.setUploadFiles(findOne.getUploadFiles());
 
 
@@ -167,6 +167,7 @@ public class BoardController {
         Board one = boardService.findOne(boardId);
 
         List<UploadFile> uploadFiles = one.getUploadFiles();
+
         for (UploadFile uploadFile : uploadFiles) {
             if (uploadFile.getStoreFileName().equals(storeFileName)) {
                 uploadFileName = uploadFile.getUploadFileName();
@@ -353,7 +354,7 @@ public class BoardController {
 
         List<Board> boards = findMember.getBoards();
         List<BoardDto> boardDto = boards.stream()
-                .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(),o.getViews(), o.getUpdatedTime()))
+                .map(o -> new BoardDto(o.getId(), o.getTitle(), o.getWriter(), o.getContent(),o.getViews(), o.getUpdatedTime(),o.getComments().size()))
                 .collect(Collectors.toList());
 
         model.addAttribute("boardDto", boardDto);

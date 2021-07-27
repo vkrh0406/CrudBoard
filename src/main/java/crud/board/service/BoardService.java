@@ -40,13 +40,18 @@ public class BoardService {
         return boardRepository.findAll(pageable);
     }
 
+    //글 하나 찾고 조회수 하나 올려줌
+    @Transactional
+    public Board findOneAndUpdateView(Long boardId) {
+        Board findOne = boardRepository.findOne(boardId);
+        findOne.addViewCount();
+        return findOne;
+    }
+
     //글 하나 찾기
     @Transactional
     public Board findOne(Long boardId) {
-
-
         Board findOne = boardRepository.findOne(boardId);
-        findOne.setViews(findOne.getViews()+1);
         return findOne;
     }
 

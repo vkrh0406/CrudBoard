@@ -43,7 +43,7 @@
             >
 
                     <td th:text="${board.id}"></td>
-                    <td th:text="${board.title}"></td>
+                    <td th:text="${board.title} + '  [' + ${board.commentCount} + ']'"></td>
                     <td th:text="${board.writer}"></td>
                     <td th:text="${#temporals.format(board.updatedTime, 'yyyy-MM-dd HH:mm')}"></td>
                     <td th:text="${board.views}"></td>

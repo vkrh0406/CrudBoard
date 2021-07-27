@@ -42,9 +42,9 @@
 <!--                <td>첨부파일 :</td>-->
 
 <!--            </tr>-->
-            <tr th:each="uploadFile : ${boardDto.uploadFiles}">
-                <td>첨부파일 :</td>
-                <td><a th:href="|@{/attach/{id} (id=${boardDto.id},storeFileName=${uploadFile.storeFileName})}|"
+             첨부파일 :
+            <tr>
+                <td th:each="uploadFile : ${boardDto.uploadFiles}"><a th:href="|@{/attach/{id} (id=${boardDto.id},storeFileName=${uploadFile.storeFileName})}|"
                        th:text="${uploadFile.uploadFileName}"/>
                 </td>
             </tr>

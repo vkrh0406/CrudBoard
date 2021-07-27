@@ -48,6 +48,10 @@ public class Board {
     private List<Comment> comments = new ArrayList<>();
 
 
+    public void addViewCount(){
+        views += 1;
+    }
+
     public void setViews(int views) {
         this.views = views;
     }

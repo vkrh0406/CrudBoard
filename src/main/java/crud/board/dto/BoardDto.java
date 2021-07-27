@@ -20,6 +20,7 @@ public class BoardDto {
     private String writer;
     private String content;
     private int views;
+    private int commentCount;
     private LocalDateTime updatedTime;
     private List<UploadFile> uploadFiles;
 
@@ -30,12 +31,13 @@ public class BoardDto {
 
 
     @QueryProjection
-    public BoardDto(Long id, String title, String writer, String content, int views, LocalDateTime updatedTime) {
+    public BoardDto(Long id, String title, String writer, String content, int views, LocalDateTime updatedTime,int commentCount) {
         this.id = id;
         this.title = title;
         this.writer = writer;
         this.content = content;
         this.views = views;
         this.updatedTime = updatedTime;
+        this.commentCount=commentCount;
     }
 }
